@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
-import Sidebar from '../../components/Sidebar'
+import Layout from '../../components/Layout'
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState({ users: 0, classes: 0, attendance: 0, todayPresent: 0 })
@@ -9,65 +9,35 @@ export default function AdminDashboard() {
     useEffect(() => {
         const load = async () => {
             const today = new Date().toISOString().split('T')[0]
-
-            const [usersRes, classesRes, attendanceRes, todayRes] = await Promise.all([
+            const [u, c, a, t] = await Promise.all([
                 supabase.from('profiles').select('id', { count: 'exact', head: true }),
                 supabase.from('classes').select('id', { count: 'exact', head: true }),
                 supabase.from('attendance').select('id', { count: 'exact', head: true }),
                 supabase.from('attendance').select('id', { count: 'exact', head: true }).eq('date', today).eq('status', 'present'),
             ])
-
-            setStats({
-                users: usersRes.count || 0,
-                classes: classesRes.count || 0,
-                attendance: attendanceRes.count || 0,
-                todayPresent: todayRes.count || 0,
-            })
+            setStats({ users: u.count || 0, classes: c.count || 0, attendance: a.count || 0, todayPresent: t.count || 0 })
             setLoading(false)
         }
         load()
     }, [])
 
-    if (loading) return (
-        <div className="app-layout">
-            <Sidebar />
-            <main className="page-content flex-center"><div className="spinner"></div></main>
-        </div>
-    )
+    if (loading) return <Layout><div className="flex-center" style={{ minHeight: '60vh' }}><div className="spinner" /></div></Layout>
 
     return (
-        <div className="app-layout">
-            <Sidebar />
-            <main className="page-content animate-slide-up">
+        <Layout>
+            <div className="animate-slide-up">
                 <div className="page-header">
                     <h1>Admin <span>Overview</span> ⚡</h1>
                     <p>System-wide statistics and quick access</p>
                 </div>
 
                 <div className="stats-grid">
-                    <div className="stat-card">
-                        <div className="stat-icon">👥</div>
-                        <div className="stat-value">{stats.users}</div>
-                        <div className="stat-label">Total Users</div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-icon">📚</div>
-                        <div className="stat-value">{stats.classes}</div>
-                        <div className="stat-label">Classes Created</div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-icon">📋</div>
-                        <div className="stat-value">{stats.attendance}</div>
-                        <div className="stat-label">Total Records</div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-icon">✅</div>
-                        <div className="stat-value" style={{ color: 'var(--success)' }}>{stats.todayPresent}</div>
-                        <div className="stat-label">Present Today</div>
-                    </div>
+                    <div className="stat-card"><div className="stat-icon">👥</div><div className="stat-value">{stats.users}</div><div className="stat-label">Total Users</div></div>
+                    <div className="stat-card"><div className="stat-icon">📚</div><div className="stat-value">{stats.classes}</div><div className="stat-label">Classes Created</div></div>
+                    <div className="stat-card"><div className="stat-icon">📋</div><div className="stat-value">{stats.attendance}</div><div className="stat-label">Total Records</div></div>
+                    <div className="stat-card"><div className="stat-icon">✅</div><div className="stat-value" style={{ color: 'var(--success)' }}>{stats.todayPresent}</div><div className="stat-label">Present Today</div></div>
                 </div>
 
-                {/* Quick actions */}
                 <div className="card">
                     <h3 style={{ marginBottom: '1rem' }}>Quick Actions</h3>
                     <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
@@ -77,7 +47,7 @@ export default function AdminDashboard() {
                         <a href="/admin/reports" className="btn btn-ghost">📊 Reports</a>
                     </div>
                 </div>
-            </main>
-        </div>
+            </div>
+        </Layout>
     )
 }

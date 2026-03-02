@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 
 const THEME_KEY = 'classtrack-theme'
 
-export default function Sidebar() {
+export default function Sidebar({ open, onClose }) {
     const { user, role, signOut } = useAuth()
     const navigate = useNavigate()
     const [theme, setTheme] = useState(() => localStorage.getItem(THEME_KEY) || 'dark')
@@ -21,11 +21,19 @@ export default function Sidebar() {
         navigate('/login')
     }
 
+    // Close sidebar on nav click (mobile)
+    const handleNavClick = () => {
+        if (onClose) onClose()
+    }
+
     const initials = user?.email?.charAt(0).toUpperCase() || '?'
     const displayEmail = user?.email || ''
 
     return (
-        <aside className="sidebar animate-slide-left">
+        <aside className={`sidebar ${open ? 'sidebar-open' : ''}`}>
+            {/* Close button — mobile only */}
+            <button className="sidebar-close" onClick={onClose} aria-label="Close menu">✕</button>
+
             {/* Logo */}
             <div className="sidebar-logo">
                 <div className="logo-icon">🎓</div>
@@ -36,35 +44,33 @@ export default function Sidebar() {
 
             {/* Navigation */}
             <nav className="sidebar-nav">
-                {/* User section */}
                 <div className="nav-section-label">Menu</div>
-                <NavLink to="/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                <NavLink to="/dashboard" onClick={handleNavClick} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                     <span className="nav-icon">🏠</span> Dashboard
                 </NavLink>
-                <NavLink to="/classes" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                <NavLink to="/classes" onClick={handleNavClick} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                     <span className="nav-icon">📚</span> My Classes
                 </NavLink>
-                <NavLink to="/profile" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                <NavLink to="/profile" onClick={handleNavClick} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                     <span className="nav-icon">👤</span> Profile
                 </NavLink>
 
-                {/* Admin section */}
                 {role === 'admin' && (
                     <>
                         <div className="nav-section-label" style={{ marginTop: '0.5rem' }}>Admin</div>
-                        <NavLink to="/admin" end className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                        <NavLink to="/admin" end onClick={handleNavClick} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                             <span className="nav-icon">⚡</span> Overview
                         </NavLink>
-                        <NavLink to="/admin/create-class" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                        <NavLink to="/admin/create-class" onClick={handleNavClick} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                             <span className="nav-icon">➕</span> Create Class
                         </NavLink>
-                        <NavLink to="/admin/mark-attendance" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                        <NavLink to="/admin/mark-attendance" onClick={handleNavClick} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                             <span className="nav-icon">✅</span> Mark Attendance
                         </NavLink>
-                        <NavLink to="/admin/users" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                        <NavLink to="/admin/users" onClick={handleNavClick} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                             <span className="nav-icon">👥</span> All Users
                         </NavLink>
-                        <NavLink to="/admin/reports" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                        <NavLink to="/admin/reports" onClick={handleNavClick} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                             <span className="nav-icon">📊</span> Reports
                         </NavLink>
                     </>
