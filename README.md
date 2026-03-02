@@ -4,7 +4,7 @@
 
 ClassTrack solves the problem of manual, error-prone attendance management by providing a digital platform where admins can create classes, mark attendance, and generate reports — while students get a real-time view of their own attendance records. Built with a sleek Yellow/Black animated UI and full role-based access control.
 
-🚀 **Live Demo:** [classtrack2285.vercel.app](https://classtrack2285.vercel.app)
+🚀 **Live Demo:** [class-track-ebon.vercel.app](https://class-track-ebon.vercel.app)
 
 ---
 
